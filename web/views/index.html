@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NGINX SOCKET</title>
+    </head>
+    <body>
+        <h1>NGINX SOCKET</h1>
+
+        <input type="text" class="in1"/>
+        <button class="btn1">SEND</button>
+
+        <button class="btn2">API</button>
+
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
+        <script>
+            const socket = io('ws://localhost/', {
+                path: '/main/socket.io/'
+            });
+
+            const INPUT1 = document.querySelector('.in1');
+            const BUTTON1 = document.querySelector('.btn1');
+
+            BUTTON1.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const message = INPUT1.value;
+                console.log(message);
+
+                socket.emit('CtoS', { message });
+            });
+
+            socket.on('StoC', ({ message }) => {
+                console.log(message);
+
+                INPUT1.value = message;
+            });
+
+            const BUTTON2 = document.querySelector('.btn2');
+            BUTTON2.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                fetch('http://localhost/main/api').then(async(res) => {
+                    const data = await res.json();
+                    console.log(data);
+                });
+            });
+        </script>
+    </body>
+</html>

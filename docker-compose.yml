@@ -1,0 +1,67 @@
+
+
+services:
+  redis:
+    container_name: rr
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  main:
+    container_name: mm
+    image: mm
+    build: server
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports: 
+      - 3131:3131
+
+  sub1:
+    container_name: ss1
+    image: ss1
+    build: server2
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 3132:3132
+    depends_on:
+      - main
+
+  sub2:
+    container_name: ss2
+    image: ss2
+    build: server3
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 3133:3133
+    depends_on:
+      - main
+    
+
+  web:
+    container_name: ww
+    image: ww
+    build: web
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports: 
+      - 3232:3232
+    depends_on:
+      - main
+      - sub1
+      - sub2
+
+  nginx:
+    container_name: nn
+    image: nn
+    build: nginx
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports: 
+      - 80:80
+    depends_on:
+      - main
+      - sub1
+      - sub2
+      - web
